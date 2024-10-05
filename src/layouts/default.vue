@@ -1,43 +1,44 @@
 <template>
-  <v-layout>
-    <v-navigation-drawer v-model="drawer" color="#040410">
-      <v-container class="d-flex justify-center align-center" fluid>
-        <v-img :src="logo" class="circular-image" width="200px"></v-img>
-      </v-container>
+  <v-app>
+    <v-layout>
+      <v-navigation-drawer v-model="drawer" color="#040410">
+        <v-container class="d-flex justify-center align-center" fluid>
+          <v-img :src="logo" class="circular-image" width="200px"></v-img>
+        </v-container>
 
-      <v-list item-props :items="items" nav />
+        <v-list item-props :items="items" nav />
 
-      <template #append>
-        <v-list-item class="ma-2" link nav prepend-icon="mdi-cog-outline" title="Settings" />
-      </template>
-    </v-navigation-drawer>
+        <template #append>
+          <v-list-item class="ma-2" link nav prepend-icon="mdi-cog-outline" title="Settings" />
+        </template>
+      </v-navigation-drawer>
 
-    <v-app-bar border="b" class="ps-4" flat color="#b064fc">
-      <v-app-bar-nav-icon v-if="$vuetify.display.smAndDown" @click="drawer = !drawer" />
+      <v-app-bar border="b" class="ps-4" flat color="#b064fc">
+        <v-app-bar-nav-icon v-if="$vuetify.display.smAndDown" @click="drawer = !drawer" />
 
-      <v-app-bar-title class="lobster-font text-h4">Practice Japanese</v-app-bar-title>
+        <v-app-bar-title class="lobster-font text-h4">Practice Japanese</v-app-bar-title>
 
-      <template #append>
-        <v-btn class="text-none me-2" height="48" icon slim>
-          <v-avatar color="surface-light" image="https://cdn.vuetifyjs.com/images/john.png" size="32" />
+        <template #append>
+          <v-btn class="text-none me-2" height="48" icon slim>
+            <v-avatar color="surface-light" image="https://cdn.vuetifyjs.com/images/john.png" size="32" />
 
-          <v-menu activator="parent">
-            <v-list density="compact" nav>
-              <v-list-item append-icon="mdi-cog-outline" link title="Settings" />
+            <v-menu activator="parent">
+              <v-list density="compact" nav>
+                <v-list-item append-icon="mdi-cog-outline" link title="Settings" />
 
-              <v-list-item append-icon="mdi-logout" link title="Logout" />
-            </v-list>
-          </v-menu>
-        </v-btn>
-      </template>
-    </v-app-bar>
+                <v-list-item append-icon="mdi-logout" link title="Logout" />
+              </v-list>
+            </v-menu>
+          </v-btn>
+        </template>
+      </v-app-bar>
 
-    <v-app>
       <v-main>
         <router-view />
       </v-main>
-    </v-app>
-  </v-layout>
+    </v-layout>
+  </v-app>
+
 </template>
 
 <script setup>
