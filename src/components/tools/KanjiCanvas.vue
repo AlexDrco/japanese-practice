@@ -1,15 +1,14 @@
 <template>
-  <v-card>
-      <canvas class="kcanvas" id="kanji-canvas" :width="canvasWidth" :height="canvasHeight"
-        @mouseleave="stopDrawing" color="white">
-        Your browser does not support the canvas element.
-      </canvas>
-      <div v-if="candidates.length" class="candidates">
-        <h3>Candidates:</h3>
-        <ul>
-          <li class="text-h4" v-for="candidate in candidates" :key="candidate">{{ candidate }}</li>
-        </ul>
-      </div>
+  <v-card class="d-flex flex-column align-center py-5">
+    <canvas class="kcanvas" :id="`kanji-canvas-${canvasId}`" :width="canvasWidth" :height="canvasHeight"
+      @mouseup="stopDrawing" @touchend="stopDrawing" @touchstart="preventScroll" @touchmove="preventScroll"
+      color="white">
+      Your browser does not support the canvas element.
+    </canvas>
+    <v-card-actions class="d-flex justify-center">
+      <v-btn icon="mdi-undo" @click="undoStroke"></v-btn>
+      <v-btn icon="mdi-trash-can-outline" @click="clearCanvas"></v-btn>
+    </v-card-actions>
   </v-card>
 </template>
 
@@ -25,24 +24,48 @@ const props = defineProps({
   canvasHeight: {
     type: Number,
     default: 256
+  },
+  canvasId: {
+    type: Number,
+    required: true
   }
 });
+
+// Emit
+const emit = defineEmits(['update:candidates']);
 
 // Refs & Variables
 const candidates = ref([]);
 
 // Functions
-const stopDrawing = () => {
+const stopDrawing = async () => {
   // Recognize the kanji
-  const result = KanjiCanvas.recognize("kanji-canvas");
-  candidates.value = result.split('\n').filter(Boolean);
-  drawCrossLines(); // Redraw the cross lines after recognizing the kanji
+  setTimeout(() => {
+    const result = KanjiCanvas.recognize(`kanji-canvas-${props.canvasId}`);
+    candidates.value = result.split('\n').filter(Boolean);
+    emit('update:candidates', candidates.value); // Emit the recognized characters
+    drawCrossLines();
+  }, 100);
+};
+
+const clearCanvas = () => {
+  KanjiCanvas.erase(`kanji-canvas-${props.canvasId}`);
+  candidates.value = [];
+  drawCrossLines();
 };
 
 
+const undoStroke = () => {
+  KanjiCanvas.deleteLast(`kanji-canvas-${props.canvasId}`);
+  drawCrossLines();
+};
+const preventScroll = (event) => {
+  event.preventDefault();
+};
+
 // Function to draw the cross lines
 const drawCrossLines = () => {
-  const canvas = document.getElementById('kanji-canvas');
+  const canvas = document.getElementById(`kanji-canvas-${props.canvasId}`);
   const ctx = canvas.getContext('2d');
   ctx.strokeStyle = '#000'; // Color of the lines
   ctx.lineWidth = 0.5; // Thickness of the lines
@@ -63,7 +86,7 @@ const drawCrossLines = () => {
 // Lifecycle Hook
 onMounted(() => {
   // Initialize Kanji Canvas
-  KanjiCanvas.init("kanji-canvas");
+  KanjiCanvas.init(`kanji-canvas-${props.canvasId}`);
   drawCrossLines();
 });
 </script>
